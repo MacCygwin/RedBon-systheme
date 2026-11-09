@@ -1,21 +1,26 @@
-pkgname=redbon-catppuccin
-pkgver=2026.02.11
+pkgname=redbon-systheme
+pkgver=2026.06.11
 pkgrel=1
-pkgdesc="Install catppuccin themes with ease on RedBon"
+pkgdesc="Overall Theme/Icons(Qt, GTK) for RedBon Desktop"
 arch=('x86_64')
 license=('MIT')
 options=('!strip')
-install=redbon-catppuccin.install
+depends=('nwg-look' 'qt5ct' 'qt6ct' 'papirus-icon-theme')
 
 package() {
-    install -d "$pkgdir/usr/share/themes"
-    cp -r "$srcdir/themes/Catppuccin-Dark-Macchiato" "$pkgdir/usr/share/themes/"
+  local theme="$srcdir/themes/Catppuccin-Dark-Macchiato"
+  [ -d "$theme" ] || { echo "src/themes/Catppuccin-Dark-Macchiato is missing"; return 1; }
 
+  install -d "$pkgdir/usr/share/themes"
+  cp -a "$theme" "$pkgdir/usr/share/themes/"
 
-    install -d "$pkgdir/usr/share/icons"
-    cp -r "$srcdir/icons/Catppuccin-Macchiato" "$pkgdir/usr/share/icons/"
+  find "$pkgdir/usr/share/themes" -type d -exec chmod 755 {} +
+  find "$pkgdir/usr/share/themes" -type f -exec chmod 644 {} +
 
-    install -d "$pkgdir/usr/share/redbon-qt"
-    cp -r "$srcdir/redbon-qt/." "$pkgdir/usr/share/redbon-qt"
+  # system-wide Qt colour schemes: qt5ct and qt6ct list these in their own settings
+  install -Dm644 "$srcdir/redbon-qt/qt5ct/colors/Catppuccin-Macchiato.conf" \
+    "$pkgdir/usr/share/qt5ct/colors/Catppuccin-Macchiato.conf"
+  install -Dm644 "$srcdir/redbon-qt/qt6ct/colors/Catppuccin-Macchiato.conf" \
+    "$pkgdir/usr/share/qt6ct/colors/Catppuccin-Macchiato.conf"
 }
 
